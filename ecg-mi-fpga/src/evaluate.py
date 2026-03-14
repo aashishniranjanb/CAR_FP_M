@@ -12,6 +12,7 @@ Author: FPGA Hackathon Team
 
 import os
 import sys
+import argparse
 import numpy as np
 import torch
 import torch.nn as nn

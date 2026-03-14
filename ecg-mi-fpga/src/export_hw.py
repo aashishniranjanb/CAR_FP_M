@@ -123,9 +123,10 @@ def export_weights_hex(quantized_state, output_dir='weights_hex'):
         hex_lines = []
         for val in flat:
             # Convert to unsigned 8-bit representation
-            if val < 0:
-                val = val + 256
-            hex_lines.append(f"{val:02X}")
+            val_int = int(val)
+            if val_int < 0:
+                val_int = val_int + 256
+            hex_lines.append(f"{val_int:02X}")
         
         # Write to file
         if param_name in layer_mapping:
@@ -181,9 +182,10 @@ def export_test_vectors(model, test_loader, output_dir='test_vectors'):
         
         hex_lines = []
         for val in sample_flat:
-            if val < 0:
-                val = val + 256
-            hex_lines.append(f"{val:02X}")
+            val_int = int(val)
+            if val_int < 0:
+                val_int = val_int + 256
+            hex_lines.append(f"{val_int:02X}")
         
         input_hex_path = os.path.join(output_dir, 'input_ecg.hex')
         with open(input_hex_path, 'w') as f:

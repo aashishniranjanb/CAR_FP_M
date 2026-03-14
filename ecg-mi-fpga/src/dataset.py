@@ -214,7 +214,7 @@ class PTBXLDataset(Dataset):
         - label: 0 (NORM) or 1 (MI)
     """
     
-    def __init__(self, df, data_dir=PTBXL_RECORDS_DIR, transform=None):
+    def __init__(self, df, data_dir=DATA_DIR, transform=None):
         """
         Initialize PTB-XL Dataset.
         
@@ -290,6 +290,10 @@ def get_data_loaders(batch_size=32, num_workers=2, data_dir=DATA_DIR):
     # Create binary labels
     df = create_binary_labels(df, scp_df)
     
+    # Filter out missing local files to avoid hanging on streaming
+    print("Filtering dataset to use only locally downloaded records...")
+    df = df[df['filename_lr'].apply(lambda f: os.path.exists(os.path.join(data_dir, f + '.hea')))].reset_index(drop=True)
+    
     # Stratified splits based on PTB-XL fold column
     # Fold 1-8: Training, Fold 9: Validation, Fold 10: Test
     train_df = df[df['strat_fold'] <= 8].reset_index(drop=True)
@@ -302,10 +306,9 @@ def get_data_loaders(batch_size=32, num_workers=2, data_dir=DATA_DIR):
     print(f"  Test:  {len(test_df)} samples ({test_df['label'].value_counts().to_dict()})")
     
     # Create datasets
-    # Note: Records are streamed from PhysioNet on-demand
-    train_dataset = PTBXLDataset(train_df, data_dir=PTBXL_RECORDS_DIR)
-    val_dataset = PTBXLDataset(val_df, data_dir=PTBXL_RECORDS_DIR)
-    test_dataset = PTBXLDataset(test_df, data_dir=PTBXL_RECORDS_DIR)
+    train_dataset = PTBXLDataset(train_df, data_dir=DATA_DIR)
+    val_dataset = PTBXLDataset(val_df, data_dir=DATA_DIR)
+    test_dataset = PTBXLDataset(test_df, data_dir=DATA_DIR)
     
     # Create DataLoaders
     train_loader = DataLoader(
