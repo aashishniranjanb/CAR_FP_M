@@ -196,16 +196,13 @@ def main(args):
     print(f"Model parameters: {model.get_num_parameters():,}")
     
     # Compute class weights for imbalanced dataset
-    # Load full dataframe to compute weights
-    import pandas as pd
-    from src.dataset import DATA_DIR, create_binary_labels
+    # Hardcoded weights to penalize MI misclassification heavily
+    # NORM: 733, MI: 385. Total: 1118
+    # Weight = Total / (Number of Classes * Class Count)
+    weight_norm = 1118 / (2 * 733)  # Roughly 0.76
+    weight_mi   = 1118 / (2 * 385)  # Roughly 1.45
     
-    df = pd.read_csv(os.path.join(DATA_DIR, 'ptbxl_database.csv'))
-    scp_df = pd.read_csv(os.path.join(DATA_DIR, 'scp_statements.csv'))
-    df = create_binary_labels(df, scp_df)
-    train_df = df[df['strat_fold'] <= 8].reset_index(drop=True)
-    
-    class_weights = compute_class_weights(train_df).to(device)
+    class_weights = torch.tensor([weight_norm, weight_mi], dtype=torch.float32).to(device)
     print(f"Class weights: {class_weights}")
     
     # Loss function with class weights

@@ -17,7 +17,7 @@ import ast
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 import wfdb
 from scipy.signal import butter, filtfilt
 import warnings
@@ -310,11 +310,18 @@ def get_data_loaders(batch_size=32, num_workers=2, data_dir=DATA_DIR):
     val_dataset = PTBXLDataset(val_df, data_dir=DATA_DIR)
     test_dataset = PTBXLDataset(test_df, data_dir=DATA_DIR)
     
+    # Create an array of weights for every sample in the training set
+    # Oversampling the minority class (MI)
+    train_labels = train_df['label'].tolist()
+    sample_weights = [2.0 if label == 1 else 1.0 for label in train_labels]
+    sampler = WeightedRandomSampler(weights=sample_weights, num_samples=len(sample_weights), replacement=True)
+    
     # Create DataLoaders
     train_loader = DataLoader(
         train_dataset, 
         batch_size=batch_size, 
-        shuffle=True, 
+        sampler=sampler,
+        shuffle=False, 
         num_workers=num_workers,
         pin_memory=True
     )
