@@ -1,0 +1,5 @@
+Predicted Class: 0
+Label: NORM
+True Label: 0
+Logits: -0.590071, -3.815217
+Probabilities: NORM=4.815217, MI=-3.815217

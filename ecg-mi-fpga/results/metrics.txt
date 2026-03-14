@@ -1,0 +1,22 @@
+ECG MI Classification - Test Metrics
+==================================================
+
+Accuracy:    90.59%
+Precision:   87.44%
+Recall:      85.09%
+Specificity: 93.51%
+F1-Score:    86.25%
+AUC:         0.9632
+
+==================================================
+Detailed Classification Report
+==================================================
+
+              precision    recall  f1-score   support
+
+        NORM       0.92      0.94      0.93       771
+          MI       0.87      0.85      0.86       409
+
+    accuracy                           0.91      1180
+   macro avg       0.90      0.89      0.90      1180
+weighted avg       0.91      0.91      0.91      1180
